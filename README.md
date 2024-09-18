@@ -17,3 +17,9 @@ Run command below to setup pre-commit hooks:
 ```shell
 $ poetry run pre-commit install
 ```
+
+## Running script
+To run the script, use the command below:
+```shell  
+$ poetry run python rotating_proxies
+```
