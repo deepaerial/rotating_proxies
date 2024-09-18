@@ -1,7 +1,6 @@
 # Rotating Proxies
 
-This is a test designed to provoke an emotional response... Shall we continue?
-## Requirements
+This project is a simple script that checks proxies from file.
 
 * Python 3.11
 * [Poetry](https://python-poetry.org/) 
@@ -19,6 +18,7 @@ $ poetry run pre-commit install
 ```
 
 ## Running script
+Save proxies in a file named `proxies.json` in the root directory of the project from https://proxyscrape.com/free-proxy-list.
 To run the script, use the command below:
 ```shell  
 $ poetry run python rotating_proxies
