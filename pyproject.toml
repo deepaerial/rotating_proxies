@@ -6,6 +6,7 @@ authors = ["author <author@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+httpx = "^0.27.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
@@ -72,12 +73,14 @@ exclude = [
     "build",
     "dist"
 ]
-
-fixable = ["I001", "F401", "W291", "W292"]
 # Same as Black.
 line-length = 120
+
+[tool.ruff.lint]
+fixable = ["I001", "F401", "W291", "W292"]
+
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "poetry.lock" = ["E501"]
