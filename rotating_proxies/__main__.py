@@ -1,13 +1,14 @@
 import asyncio
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import httpx
 
-
 PROJECT_ROOT = (Path(__file__).parent / "..").resolve()
 PROXIES_JSON_FILE = (PROJECT_ROOT / "proxies.json").absolute()
+
+OUTPUT_FILE = (PROJECT_ROOT / "working_proxies.json").absolute()
 
 URL_TO_CHECK = "https://httpbin.org/ip"
 
@@ -61,9 +62,15 @@ async def probing_proxies(proxies: list[Proxy]):
     checked_proxies = await asyncio.gather(
         *[probe_proxy(proxy, URL_TO_CHECK, f"{idx}/{len(proxies)}") for idx, proxy in enumerate(proxies)]
     )
-    print("\n".join(repr(p) for p in filter(lambda e: e is not None, checked_proxies)))
+    only_working_proxies = [p for p in checked_proxies if p is not None]
+    # Save only working proxies
+    with OUTPUT_FILE.open("w") as f:
+        f.write(json.dumps([asdict(p) for p in only_working_proxies], indent=2))
 
 
 if __name__ == "__main__":
     proxies: list[Proxy] = read_proxies_json()
-    asyncio.run(probing_proxies(proxies))
+    if not proxies:
+        print("No proxies to check")
+    else:
+        asyncio.run(probing_proxies(proxies))
