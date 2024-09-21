@@ -7,6 +7,8 @@ authors = ["author <author@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 httpx = "^0.27.2"
+tqdm = "^4.66.5"
+rich = "^13.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
