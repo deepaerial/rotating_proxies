@@ -11,7 +11,7 @@ from tqdm.asyncio import tqdm_asyncio
 
 PROJECT_ROOT = (Path(__file__).parent / "..").resolve()
 PROXIES_JSON_FILE = (PROJECT_ROOT / "proxies.json").absolute()
-OUTPUT_FILE = (PROJECT_ROOT / "working_proxies.json").absolute()
+OUTPUT_FILE = (PROJECT_ROOT / "working_proxies.txt").absolute()
 URL_TO_CHECK = "https://httpbin.org/ip"
 
 
@@ -31,9 +31,11 @@ class Proxy:
         return f"{self.protocol}://{self.ip}:{self.port} ({self.country}, {self.continent})"
 
 
-def export_to_json(proxies: List[Proxy], output_file: Path, indent: int = 2):
+def export_to_file(proxies: List[Proxy], output_file: Path):
     with output_file.open("w") as f:
-        f.write(json.dumps([asdict(p) for p in proxies], indent=indent))
+        for proxy in proxies:
+            f.write(str(proxy))
+            f.write("\n")
 
 
 def export_to_console_table(proxies: List[Proxy]):
@@ -93,7 +95,7 @@ async def probing_proxies(proxies: List[Proxy]):
     # Filter out None values (failed proxies)
     only_working_proxies = [p for p in checked_proxies if p is not None]
     export_to_console_table(only_working_proxies)
-    export_to_json(only_working_proxies, OUTPUT_FILE)
+    export_to_file(only_working_proxies, OUTPUT_FILE)
 
 
 if __name__ == "__main__":
