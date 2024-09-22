@@ -1,6 +1,6 @@
 import asyncio
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
@@ -13,6 +13,8 @@ PROJECT_ROOT = (Path(__file__).parent / "..").resolve()
 PROXIES_JSON_FILE = (PROJECT_ROOT / "proxies.json").absolute()
 OUTPUT_FILE = (PROJECT_ROOT / "working_proxies.txt").absolute()
 URL_TO_CHECK = "https://httpbin.org/ip"
+
+console = Console()
 
 
 @dataclass
@@ -48,8 +50,6 @@ def export_to_console_table(proxies: List[Proxy]):
 
     for proxy in proxies:
         table.add_row(proxy.protocol, proxy.ip, str(proxy.port), proxy.country)
-
-    console = Console()
     console.print(table)
 
 
@@ -96,6 +96,7 @@ async def probing_proxies(proxies: List[Proxy]):
     only_working_proxies = [p for p in checked_proxies if p is not None]
     export_to_console_table(only_working_proxies)
     export_to_file(only_working_proxies, OUTPUT_FILE)
+    console.print(f"[bold cyan]Results saved to:[/bold cyan] [bold white]{OUTPUT_FILE.resolve()}[/bold white]")
 
 
 if __name__ == "__main__":
