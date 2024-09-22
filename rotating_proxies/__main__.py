@@ -29,9 +29,6 @@ class Proxy:
     def __str__(self) -> str:
         return f"{self.protocol}://{self.ip}:{self.port}"
 
-    def __repr__(self) -> str:
-        return f"{self.protocol}://{self.ip}:{self.port} ({self.country}, {self.continent})"
-
 
 def export_to_file(proxies: List[Proxy], output_file: Path):
     with output_file.open("w") as f:
@@ -77,7 +74,7 @@ def read_proxies_json(proxies_json_file: Path = PROXIES_JSON_FILE) -> List[Proxy
         return []
 
 
-async def probe_proxy(proxy: Proxy, url_to_check: str, log_number: str) -> Proxy | None:
+async def probe_proxy(proxy: Proxy, url_to_check: str) -> Proxy | None:
     async with httpx.AsyncClient(proxy=proxy.proxy) as client:
         try:
             response = await client.get(url_to_check)
