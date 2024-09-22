@@ -23,3 +23,7 @@ To run the script, use the command below:
 ```shell  
 $ poetry run python rotating_proxies
 ```
+Or simply run the script using the command below:
+```shell
+$ ./run.sh
+```
