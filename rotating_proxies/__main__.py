@@ -14,6 +14,8 @@ PROXIES_JSON_FILE = (PROJECT_ROOT / "proxies.json").absolute()
 OUTPUT_FILE = (PROJECT_ROOT / "working_proxies.txt").absolute()
 URL_TO_CHECK = "https://httpbin.org/ip"
 
+MAX_CONCURRENT_REQUESTS = 200  # Number of concurrent requests to make
+
 console = Console()
 
 
@@ -74,19 +76,21 @@ def read_proxies_json(proxies_json_file: Path = PROXIES_JSON_FILE) -> List[Proxy
         return []
 
 
-async def probe_proxy(proxy: Proxy, url_to_check: str) -> Proxy | None:
-    async with httpx.AsyncClient(proxy=proxy.proxy) as client:
-        try:
-            response = await client.get(url_to_check)
-            response.raise_for_status()
-            return proxy
-        except Exception:
-            return None
+async def probe_proxy(proxy: Proxy, url_to_check: str, semaphore: asyncio.Semaphore) -> Proxy | None:
+    async with semaphore:
+        async with httpx.AsyncClient(proxy=proxy.proxy) as client:
+            try:
+                response = await client.get(url_to_check)
+                response.raise_for_status()
+                return proxy
+            except Exception:
+                return None
 
 
 async def probing_proxies(proxies: List[Proxy]):
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+    tasks = [probe_proxy(proxy, URL_TO_CHECK, semaphore) for proxy in proxies]
     # Wrapping tasks in tqdm to show progress
-    tasks = [probe_proxy(proxy, URL_TO_CHECK, f"{idx + 1}/{len(proxies)}") for idx, proxy in enumerate(proxies)]
     checked_proxies = await tqdm_asyncio.gather(*tasks, desc="Checking Proxies", unit="proxy")
 
     # Filter out None values (failed proxies)
